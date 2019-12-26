@@ -1,0 +1,46 @@
+version: '3.3'
+
+services:
+  sonarqube:
+    image: sonarqube:7.7-community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+      # No need for 9092, because if for embedded h2 DB
+      # - "9092:9092"
+    networks:
+      - sonarnet
+    environment:
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://db:5432/sonar
+    volumes:
+      - ./volumes/sonarqube/conf:/opt/sonarqube/conf
+      - ./volumes/sonarqube/data:/opt/sonarqube/data
+      - ./volumes/sonarqube/extensions:/opt/sonarqube/extensions
+      - ./volumes/sonarqube/bundled-plugins:/opt/sonarqube/lib/bundled-plugins
+
+  db:
+    image: postgres:11.3-alpine
+    container_name: sonarqubedb
+    ports:
+      - 5432:5432
+    networks:
+      - sonarnet
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+    volumes:
+      - ./volumes/postgresql/other:/var/lib/postgresql
+      # This needs explicit mapping due to https://github.com/docker-library/postgres/blob/4e48e3228a30763913ece952c611e5e9b95c8759/Dockerfile.template#L52
+      - ./volumes/postgresql/data:/var/lib/postgresql/data
+
+networks:
+  sonarnet:
+    driver: bridge
+
+volumes:
+  sonarqube_conf:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_bundled-plugins:
+  postgresql:
+  postgresql_data:
