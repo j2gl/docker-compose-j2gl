@@ -1,0 +1,12 @@
+version: '3.3'
+
+services:
+  zk-web:
+    image: tobilg/zookeeper-webui
+    container_name: zk-web
+    ports:
+      - "8080:8080"
+    environment:
+      - ZK_DEFAULT_NODE=zookeeper01:2181 
+      - USER=admin 
+      - PASSWORD=asdf1234
